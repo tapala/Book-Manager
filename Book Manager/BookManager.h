@@ -10,7 +10,10 @@ class BookManager : public QMainWindow
 public:
     BookManager(QWidget *parent = nullptr);
     ~BookManager();
+    void addBook(bool editable = false);
+    void delBook();
 
 private:
     Ui::BookManagerClass ui;
+
 };
