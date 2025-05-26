@@ -1,5 +1,6 @@
 #include "BookManager.h"
 #include "AddBookDialog.h"
+#include <QMessageBox>
 
 BookManager::BookManager(QWidget *parent)
     : QMainWindow(parent)
@@ -40,10 +41,12 @@ void BookManager::addBook(bool editable) {
 
         if (editable) {
             if (item) {
+                QMessageBox::information(this, "Sukces","Edytowano wybran¹ ksi¹¿kê");
                 item->setText(rowText);
             }
         }
         else {
+            QMessageBox::information(this, "Sukces", "Dodano now¹ ksi¹¿kê");
             ui.listWidget->addItem(rowText);
         }
     }
@@ -52,6 +55,7 @@ void BookManager::addBook(bool editable) {
 void BookManager::delBook() {
     QListWidgetItem* item = ui.listWidget->currentItem();
     if (item) {
+        QMessageBox::information(this, "Sukces", "Book Deleted");
         delete item;
     }
 }

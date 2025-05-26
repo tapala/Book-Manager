@@ -1,4 +1,6 @@
 #include "AddBookDialog.h"
+#include <regex>
+#include <QMessageBox>
 
 
 AddBookDialog::AddBookDialog(QWidget* parent)
@@ -10,7 +12,12 @@ AddBookDialog::AddBookDialog(QWidget* parent)
 
 void AddBookDialog::onConfirmClicked()
 {
-    accept();
+    if (std::regex_match(ui.lineEditAuthor->text().toStdString(), std::regex("^[A-Z][a-zA-Z]*([ ][A-Z][a-zA-Z]*){0,2}$"))) {
+        accept(); 
+    }
+    else {
+        QMessageBox::information(this, "B³¹d", "Nazwa autora mo¿e siê sk³adaæ tylko z ma³ych i wielkich liter oraz nie mo¿e byæ pusta ani zawieraæ wiêcej ni¿ 3 s³owa");
+    }
 }
 
 void AddBookDialog::setAll(QString title, QString author, QString date, QStringList list, bool isRead) {
