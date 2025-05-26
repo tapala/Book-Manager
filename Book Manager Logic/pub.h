@@ -9,9 +9,14 @@ using namespace std;
 class Publication {
 public:
     int id;
-    string name;
+    string title;
+    string author;
+    string releaseDate;
+    string genre;
+    bool isRead;
 
-    Publication(int id, const string& name);
+    Publication(int id, const string& title, const string& author,
+        const string& releaseDate, const string& genre, bool isRead);
     virtual ~Publication() = default;
 
     virtual string publicationType() const = 0;
@@ -20,14 +25,16 @@ public:
 // Derived class: Book
 class Book : public Publication {
 public:
-    Book(int id, const string& name);
+    Book(int id, const string& title, const string& author,
+        const string& releaseDate, const string& genre, bool isRead);
     string publicationType() const override;
 };
 
 // Derived class: Paper
 class Paper : public Publication {
 public:
-    Paper(int id, const string& name);
+    Paper(int id, const string& title, const string& author,
+        const string& releaseDate, const string& genre, bool isRead);
     string publicationType() const override;
 };
 

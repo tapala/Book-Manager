@@ -4,22 +4,26 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <algorithm>
 
 // --- Publication Base ---
-Publication::Publication(int id, const string& name)
-    : id(id), name(name) {}
+Publication::Publication(int id, const string& title, const string& author,
+    const string& releaseDate, const string& genre, bool isRead)
+    : id(id), title(title), author(author), releaseDate(releaseDate), genre(genre), isRead(isRead) {}
 
 // --- Book ---
-Book::Book(int id, const string& name)
-    : Publication(id, name) {}
+Book::Book(int id, const string& title, const string& author,
+    const string& releaseDate, const string& genre, bool isRead)
+    : Publication(id, title, author, releaseDate, genre, isRead) {}
 
 string Book::publicationType() const {
     return "Book";
 }
 
 // --- Paper ---
-Paper::Paper(int id, const string& name)
-    : Publication(id, name) {}
+Paper::Paper(int id, const string& title, const string& author,
+    const string& releaseDate, const string& genre, bool isRead)
+    : Publication(id, title, author, releaseDate, genre, isRead) {}
 
 string Paper::publicationType() const {
     return "Paper";
@@ -30,8 +34,7 @@ PublicationList::Node::Node(unique_ptr<Publication> p)
     : publication(move(p)), prev(nullptr), next(nullptr) {}
 
 // --- PublicationList ---
-PublicationList::PublicationList()
-    : head(nullptr), tail(nullptr), size(0) {}
+PublicationList::PublicationList() : head(nullptr), tail(nullptr), size(0) {}
 
 PublicationList::~PublicationList() {
     Node* current = head;
@@ -51,7 +54,7 @@ void PublicationList::addPublication(unique_ptr<Publication> publication) {
 
     Logger::log("Adding publication: ID=" + to_string(publication->id) +
         ", Type=" + publication->publicationType() +
-        ", Name=\"" + publication->name + "\"");
+        ", Title=\"" + publication->title + "\"");
 
     Node* newNode = new Node(move(publication));
     if (!head) {
@@ -90,7 +93,7 @@ bool PublicationList::removePublicationById(int id) {
 
 const Publication* PublicationList::getPublicationByIndex(int index) const {
     if (index < 0 || index >= size) {
-        Logger::log("Error: Index out of bounds access in getPublicationByIndex (index=" + to_string(index) + ")");
+        Logger::log("Error: Index out of bounds in getPublicationByIndex: " + to_string(index));
         return nullptr;
     }
 
@@ -101,7 +104,7 @@ const Publication* PublicationList::getPublicationByIndex(int index) const {
 
 Publication* PublicationList::getPublicationByIndex(int index) {
     if (index < 0 || index >= size) {
-        Logger::log("Error: Index out of bounds access in getPublicationByIndex (index=" + to_string(index) + ")");
+        Logger::log("Error: Index out of bounds in getPublicationByIndex: " + to_string(index));
         return nullptr;
     }
 
@@ -125,19 +128,13 @@ int PublicationList::getSize() const {
 
 Publication& PublicationList::operator[](int index) {
     Publication* ptr = getPublicationByIndex(index);
-    if (!ptr) {
-        Logger::log("Error: Attempted to access invalid index in operator[]: " + to_string(index));
-        throw out_of_range("Index out of bounds");
-    }
+    if (!ptr) throw out_of_range("Index out of bounds");
     return *ptr;
 }
 
 const Publication& PublicationList::operator[](int index) const {
     const Publication* ptr = getPublicationByIndex(index);
-    if (!ptr) {
-        Logger::log("Error: Attempted to access invalid index in const operator[]: " + to_string(index));
-        throw out_of_range("Index out of bounds");
-    }
+    if (!ptr) throw out_of_range("Index out of bounds");
     return *ptr;
 }
 
@@ -155,26 +152,33 @@ PublicationList readPublicationsFromCSV(const string& path) {
     string line;
     while (getline(file, line)) {
         stringstream ss(line);
-        string type, idStr, name;
+        string type, idStr, title, author, releaseDate, genre, isReadStr;
 
-        getline(ss, type, ',');
-        getline(ss, idStr, ',');
-        getline(ss, name);
+        getline(ss, type, '\t');
+        getline(ss, idStr, '\t');
+        getline(ss, title, '\t');
+        getline(ss, author, '\t');
+        getline(ss, releaseDate, '\t');
+        getline(ss, genre, '\t');
+        getline(ss, isReadStr, '\t');
+
 
         try {
             int id = stoi(idStr);
+            bool isRead = (isReadStr == "1" || isReadStr == "true");
+
             if (type == "Book") {
-                list.addPublication(make_unique<Book>(id, name));
+                list.addPublication(make_unique<Book>(id, title, author, releaseDate, genre, isRead));
             }
             else if (type == "Paper") {
-                list.addPublication(make_unique<Paper>(id, name));
+                list.addPublication(make_unique<Paper>(id, title, author, releaseDate, genre, isRead));
             }
             else {
                 Logger::log("Warning: Unknown publication type in CSV: " + type);
             }
         }
         catch (const exception& e) {
-            Logger::log("Error parsing CSV line: \"" + line + "\" - " + e.what());
+            Logger::log("Error parsing CSV line: '" + line + "' - " + e.what());
         }
     }
 
@@ -192,7 +196,13 @@ bool savePublicationsToCSV(const string& path, const PublicationList& list, bool
 
     for (int i = 0; i < list.getSize(); ++i) {
         const Publication& pub = list[i];
-        file << pub.publicationType() << "," << pub.id << "," << pub.name << "\n";
+        file << pub.publicationType() << "\t"
+            << pub.id << "\t"
+            << pub.title << "\t"
+            << pub.author << "\t"
+            << pub.releaseDate << "\t"
+            << pub.genre << "\t"
+            << (pub.isRead ? "1" : "0") << "\n";
     }
 
     return true;
