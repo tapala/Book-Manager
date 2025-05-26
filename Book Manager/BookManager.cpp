@@ -41,12 +41,12 @@ void BookManager::addBook(bool editable) {
 
         if (editable) {
             if (item) {
-                QMessageBox::information(this, "Sukces","Edytowano wybran¹ ksi¹¿kê");
+                CreateMessage("Sukces","Edytowano wybrana ksiazke");
                 item->setText(rowText);
             }
         }
         else {
-            QMessageBox::information(this, "Sukces", "Dodano now¹ ksi¹¿kê");
+            CreateMessage("Sukces", "Dodano nowa ksiazke");
             ui.listWidget->addItem(rowText);
         }
     }
@@ -55,7 +55,11 @@ void BookManager::addBook(bool editable) {
 void BookManager::delBook() {
     QListWidgetItem* item = ui.listWidget->currentItem();
     if (item) {
-        QMessageBox::information(this, "Sukces", "Book Deleted");
+        CreateMessage("Sukces", "Usunieto wybrana ksiazke");
         delete item;
     }
+}
+
+void BookManager::CreateMessage(QString title, QString information) {
+    QMessageBox::information(this, title, information);
 }

@@ -13,6 +13,8 @@ public:
     void addBook(bool editable = false);
     void delBook();
 
+    void CreateMessage(QString title, QString information);
+
 private:
     Ui::BookManagerClass ui;
 
