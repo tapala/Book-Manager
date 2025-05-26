@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -93,8 +93,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <QtRcc Include="BookManager.qrc" />
+    <QtUic Include="AddBookDialog.ui" />
     <QtUic Include="BookManager.ui" />
     <QtMoc Include="BookManager.h" />
+    <ClCompile Include="AddBookDialog.cpp" />
     <ClCompile Include="BookManager.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
@@ -102,6 +104,7 @@
     <ProjectReference Include="..\Book Manager Logic\Book Manager Logic.vcxproj">
       <Project>{3b7c0401-5414-4dfc-9605-a575142146a3}</Project>
     </ProjectReference>
+    <QtMoc Include="AddBookDialog.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
