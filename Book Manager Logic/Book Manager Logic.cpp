@@ -3,8 +3,7 @@
 
 #include "pch.h"
 #include "framework.h"
-#include "Book.h"
-#include "BookList.h"
+#include "pub.h"
 
 // TODO: To jest przykład funkcji biblioteki
 void fnBookManagerLogic()

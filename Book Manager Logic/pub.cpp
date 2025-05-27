@@ -1,10 +1,15 @@
-#include "pub.h"
 #include "pch.h"
+#include "pub.h"
 #include "Logger.h"
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include <algorithm>
+#include <memory>
+#include <utility>
+#include <string>
+#include <stdexcept>
+
+using namespace std;
 
 // --- Publication Base ---
 Publication::Publication(int id, const string& title, const string& author,
