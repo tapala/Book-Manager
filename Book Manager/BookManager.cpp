@@ -1,6 +1,7 @@
 #include "BookManager.h"
 #include "AddBookDialog.h"
 #include <QMessageBox>
+#include "pub.h"
 
 BookManager::BookManager(QWidget *parent)
     : QMainWindow(parent)
