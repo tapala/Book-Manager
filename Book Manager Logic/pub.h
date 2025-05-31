@@ -8,14 +8,14 @@ using namespace std;
 // Base class for all publication types
 class Publication {
 public:
-    int id;
+    string uuid;
     string title;
     string author;
     string releaseDate;
     string genre;
     bool isRead;
 
-    Publication(int id, const string& title, const string& author,
+    Publication(const string& uuid, const string& title, const string& author,
         const string& releaseDate, const string& genre, bool isRead);
     virtual ~Publication() = default;
 
@@ -25,7 +25,7 @@ public:
 // Derived class: Book
 class Book : public Publication {
 public:
-    Book(int id, const string& title, const string& author,
+    Book(const string& uuid, const string& title, const string& author,
         const string& releaseDate, const string& genre, bool isRead);
     string publicationType() const override;
 };
@@ -33,7 +33,7 @@ public:
 // Derived class: Paper
 class Paper : public Publication {
 public:
-    Paper(int id, const string& title, const string& author,
+    Paper(const string& uuid, const string& title, const string& author,
         const string& releaseDate, const string& genre, bool isRead);
     string publicationType() const override;
 };
@@ -58,10 +58,10 @@ public:
     ~PublicationList();
 
     void addPublication(unique_ptr<Publication> publication);
-    bool removePublicationById(int id);
+    bool removePublicationById(const string& uuid);
     const Publication* getPublicationByIndex(int index) const;
     Publication* getPublicationByIndex(int index);
-    Publication* getPublicationById(int id);
+    Publication* getPublicationById(const string& uuid);
 
     int getSize() const;
     Publication& operator[](int index);

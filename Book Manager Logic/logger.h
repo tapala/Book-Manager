@@ -6,7 +6,7 @@
 
 class Logger {
 public:
-    static void log(const std::string& message, const std::string& logFile = "log.txt");
+    static void log(const std::string& message, const std::string& logFile = "../data/log.txt");
 
 private:
     static std::mutex logMutex;
