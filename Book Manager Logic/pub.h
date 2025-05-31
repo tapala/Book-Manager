@@ -4,7 +4,6 @@
 #include <memory>
 
 using namespace std;
-
 // Base class for all publication types
 class Publication {
 public:
@@ -66,6 +65,32 @@ public:
     int getSize() const;
     Publication& operator[](int index);
     const Publication& operator[](int index) const;
+
+    class Iterator {
+        Node* current;
+    public:
+        Iterator(Node* node) : current(node) {}
+        Publication& operator*() const { return *current->publication; }
+        Publication* operator->() const { return current->publication.get(); }
+        Iterator& operator++() { current = current->next; return *this; }
+        bool operator!=(const Iterator& other) const { return current != other.current; }
+    };
+
+    class ConstIterator {
+        const Node* current;
+    public:
+        ConstIterator(const Node* node) : current(node) {}
+        const Publication& operator*() const { return *current->publication; }
+        const Publication* operator->() const { return current->publication.get(); }
+        ConstIterator& operator++() { current = current->next; return *this; }
+        bool operator!=(const ConstIterator& other) const { return current != other.current; }
+    };
+
+    Iterator begin() { return Iterator(head); }
+    Iterator end() { return Iterator(nullptr); }
+
+    ConstIterator begin() const { return ConstIterator(head); }
+    ConstIterator end() const { return ConstIterator(nullptr); }
 };
 
 // File I/O functions
