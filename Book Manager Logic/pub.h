@@ -17,7 +17,7 @@ public:
     Publication(const string& uuid, const string& title, const string& author,
         const string& releaseDate, const string& genre, bool isRead);
     virtual ~Publication() = default;
-
+    virtual unique_ptr<Publication> clone() const = 0;
     virtual string publicationType() const = 0;
 };
 
@@ -27,6 +27,8 @@ public:
     Book(const string& uuid, const string& title, const string& author,
         const string& releaseDate, const string& genre, bool isRead);
     string publicationType() const override;
+    unique_ptr<Publication> clone() const override;
+
 };
 
 // Derived class: Paper
@@ -35,6 +37,8 @@ public:
     Paper(const string& uuid, const string& title, const string& author,
         const string& releaseDate, const string& genre, bool isRead);
     string publicationType() const override;
+    unique_ptr<Publication> clone() const override;
+
 };
 
 // List to store Publication objects
@@ -61,10 +65,13 @@ public:
     const Publication* getPublicationByIndex(int index) const;
     Publication* getPublicationByIndex(int index);
     Publication* getPublicationById(const string& uuid);
+    void clear();
 
     int getSize() const;
     Publication& operator[](int index);
     const Publication& operator[](int index) const;
+
+    bool replaceByUuid(const string& uuid, unique_ptr<Publication> newPub);
 
     class Iterator {
         Node* current;
@@ -96,3 +103,4 @@ public:
 // File I/O functions
 PublicationList readPublicationsFromCSV(const string& path);
 bool savePublicationsToCSV(const string& path, const PublicationList& list, bool append = false);
+void printList(const PublicationList& list);
