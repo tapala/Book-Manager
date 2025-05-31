@@ -25,6 +25,11 @@ string Book::publicationType() const {
     return "Book";
 }
 
+unique_ptr<Publication> Book::clone() const {
+    return make_unique<Book>(uuid, title, author, releaseDate, genre, isRead);
+}
+
+
 // --- Paper ---
 Paper::Paper(const string& uuid, const string& title, const string& author,
     const string& releaseDate, const string& genre, bool isRead)
@@ -32,6 +37,10 @@ Paper::Paper(const string& uuid, const string& title, const string& author,
 
 string Paper::publicationType() const {
     return "Paper";
+}
+
+unique_ptr<Publication> Paper::clone() const {
+    return make_unique<Paper>(uuid, title, author, releaseDate, genre, isRead);
 }
 
 // --- Node Constructor ---
@@ -143,6 +152,30 @@ const Publication& PublicationList::operator[](int index) const {
     return *ptr;
 }
 
+bool PublicationList::replaceByUuid(const string& uuid, unique_ptr<Publication> newPub) {
+    Node* current = head;
+    while (current) {
+        if (current->publication->uuid == uuid) {
+            current->publication = std::move(newPub);
+            return true;
+        }
+        current = current->next;
+    }
+    return false;
+}
+
+void PublicationList::clear() {
+    Node* current = head;
+    while (current) {
+        Node* next = current->next;
+        delete current;
+        current = next;
+    }
+    head = tail = nullptr;
+    size = 0;
+    Logger::log("PublicationList cleared.");
+}
+
 // --- CSV File I/O ---
 PublicationList readPublicationsFromCSV(const string& path) {
     PublicationList list;
@@ -211,4 +244,16 @@ bool savePublicationsToCSV(const string& path, const PublicationList& list, bool
     }
 
     return true;
+}
+
+void printList(const PublicationList& list) {
+    cout << "\n--- Current Publications ---" << endl;
+    for (const auto& pub : list) {
+        cout << pub.uuid << ": [" << pub.publicationType() << "] "
+            << pub.title << " by " << pub.author
+            << ", Released: " << pub.releaseDate
+            << ", Genre: " << pub.genre
+            << ", Read: " << (pub.isRead ? "Yes" : "No")
+            << endl;
+    }
 }
