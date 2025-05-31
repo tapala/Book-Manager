@@ -12,23 +12,23 @@
 using namespace std;
 
 // --- Publication Base ---
-Publication::Publication(int id, const string& title, const string& author,
+Publication::Publication(const string& uuid, const string& title, const string& author,
     const string& releaseDate, const string& genre, bool isRead)
-    : id(id), title(title), author(author), releaseDate(releaseDate), genre(genre), isRead(isRead) {}
+    : uuid(uuid), title(title), author(author), releaseDate(releaseDate), genre(genre), isRead(isRead) {}
 
 // --- Book ---
-Book::Book(int id, const string& title, const string& author,
+Book::Book(const string& uuid, const string& title, const string& author,
     const string& releaseDate, const string& genre, bool isRead)
-    : Publication(id, title, author, releaseDate, genre, isRead) {}
+    : Publication(uuid, title, author, releaseDate, genre, isRead) {}
 
 string Book::publicationType() const {
     return "Book";
 }
 
 // --- Paper ---
-Paper::Paper(int id, const string& title, const string& author,
+Paper::Paper(const string& uuid, const string& title, const string& author,
     const string& releaseDate, const string& genre, bool isRead)
-    : Publication(id, title, author, releaseDate, genre, isRead) {}
+    : Publication(uuid, title, author, releaseDate, genre, isRead) {}
 
 string Paper::publicationType() const {
     return "Paper";
@@ -57,7 +57,7 @@ void PublicationList::addPublication(unique_ptr<Publication> publication) {
         return;
     }
 
-    Logger::log("Adding publication: ID=" + to_string(publication->id) +
+    Logger::log("Adding publication: ID=" + publication->uuid +
         ", Type=" + publication->publicationType() +
         ", Title=\"" + publication->title + "\"");
 
@@ -73,11 +73,11 @@ void PublicationList::addPublication(unique_ptr<Publication> publication) {
     ++size;
 }
 
-bool PublicationList::removePublicationById(int id) {
+bool PublicationList::removePublicationById(const string& uuid) {
     Node* current = head;
     while (current) {
-        if (current->publication->id == id) {
-            Logger::log("Removing publication: ID=" + to_string(id));
+        if (current->publication->uuid == uuid) {
+            Logger::log("Removing publication: ID=" + uuid);
 
             if (current->prev) current->prev->next = current->next;
             else head = current->next;
@@ -92,7 +92,7 @@ bool PublicationList::removePublicationById(int id) {
         current = current->next;
     }
 
-    Logger::log("Warning: Tried to remove non-existent publication with ID=" + to_string(id));
+    Logger::log("Warning: Tried to remove non-existent publication with ID=" + uuid);
     return false;
 }
 
@@ -118,10 +118,10 @@ Publication* PublicationList::getPublicationByIndex(int index) {
     return current->publication.get();
 }
 
-Publication* PublicationList::getPublicationById(int id) {
+Publication* PublicationList::getPublicationById(const string& uuid) {
     Node* current = head;
     while (current) {
-        if (current->publication->id == id) return current->publication.get();
+        if (current->publication->uuid == uuid) return current->publication.get();
         current = current->next;
     }
     return nullptr;
@@ -157,10 +157,10 @@ PublicationList readPublicationsFromCSV(const string& path) {
     string line;
     while (getline(file, line)) {
         stringstream ss(line);
-        string type, idStr, title, author, releaseDate, genre, isReadStr;
+        string type, uuidStr, title, author, releaseDate, genre, isReadStr;
 
         getline(ss, type, '\t');
-        getline(ss, idStr, '\t');
+        getline(ss, uuidStr, '\t');
         getline(ss, title, '\t');
         getline(ss, author, '\t');
         getline(ss, releaseDate, '\t');
@@ -169,14 +169,14 @@ PublicationList readPublicationsFromCSV(const string& path) {
 
 
         try {
-            int id = stoi(idStr);
+            string uuid = uuidStr;
             bool isRead = (isReadStr == "1" || isReadStr == "true");
 
             if (type == "Book") {
-                list.addPublication(make_unique<Book>(id, title, author, releaseDate, genre, isRead));
+                list.addPublication(make_unique<Book>(uuid, title, author, releaseDate, genre, isRead));
             }
             else if (type == "Paper") {
-                list.addPublication(make_unique<Paper>(id, title, author, releaseDate, genre, isRead));
+                list.addPublication(make_unique<Paper>(uuid, title, author, releaseDate, genre, isRead));
             }
             else {
                 Logger::log("Warning: Unknown publication type in CSV: " + type);
@@ -202,7 +202,7 @@ bool savePublicationsToCSV(const string& path, const PublicationList& list, bool
     for (int i = 0; i < list.getSize(); ++i) {
         const Publication& pub = list[i];
         file << pub.publicationType() << "\t"
-            << pub.id << "\t"
+            << pub.uuid << "\t"
             << pub.title << "\t"
             << pub.author << "\t"
             << pub.releaseDate << "\t"
