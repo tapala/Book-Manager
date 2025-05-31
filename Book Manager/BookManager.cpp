@@ -32,7 +32,7 @@ void BookManager::updateListWidgetFromList() {
     ui.listWidget->clear();
     bookList.clear();
     for (auto& book : readPublicationsFromCSV("../data/publications.csv")) {
-        QString rowText = QString::fromStdString(book.title).leftJustified(50) + "|        " + QString::fromStdString(book.author).leftJustified(50) + "|        " + QString::fromStdString(book.releaseDate).leftJustified(50) + "|        " + QString::fromStdString(book.genre).left(book.genre.length() - 2).leftJustified(50) + "|        " + QString::fromStdString((book.isRead) ? "Przeczytane" : "Do przeczytania").leftJustified(60);
+        QString rowText = QString::fromStdString(book.title).leftJustified(50) + "|        " + QString::fromStdString(book.author).leftJustified(50) + "|        " + QString::fromStdString(book.releaseDate).leftJustified(50) + "|        " + QString::fromStdString(book.genre).leftJustified(50) + "|        " + QString::fromStdString((book.isRead) ? "Przeczytane" : "Do przeczytania").leftJustified(60);
         QListWidgetItem* newItem = new QListWidgetItem(rowText);
         bookList.addPublication(book.clone());
         newItem->setData(Qt::UserRole, QString::fromStdString(book.uuid));
